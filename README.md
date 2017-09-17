@@ -10,12 +10,21 @@ Note, the trigger command will only be execute when at least one add or delete c
 
 watcherd can either use the native [inotifywait](https://linux.die.net/man/1/inotifywait) implementation or if this is not available on your system use a custom bash implementation. The default is to use bash.
 
+### Placeholders
+
+There are two placeholders available that make it easier to use custom commands/scripts for the add (`-a`) or delete (`-d`) action.:
+
+* `%p` Full path to the directory that was added or deletd
+* `%n` Name of the directory that was added or deleted
+
+You can specify the placeholders as many times as you want. See the following example section for usage.
+
 ### Examples
 
-Assuming `vhost-add.sh` will add nginx vhost config files and `vhost-del.sh` will remove nginx vhost config files, the following will then be able to create new nginx vhosts on-the-fly, simply by adding or deleting folders in your main www directory. The trigger command will simply force nginx to reload its configuration after directory changes occured.
+Assuming [vhost_add.py](https://github.com/devilbox/vhost-gen) will add nginx vhost config files, the following will then be able to create new nginx vhosts on-the-fly, simply by adding or deleting folders in your main www directory. The trigger command will simply force nginx to reload its configuration after directory changes occured.
 
 ```shell
-watcherd -p /var/www -a vhost-add.sh -d vhost-del.sh -t "nginx -s stop"
+watcherd -p /var/www -a "vhost_add.py -p %p -n %n" -d "rm %p" -t "nginx -s stop"
 ```
 
 ### Usage

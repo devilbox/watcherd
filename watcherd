@@ -25,7 +25,7 @@ IFS=$'\n'
 
 # Versioning
 MY_NAME="watcherd"
-MY_DATE="2017-09-16"
+MY_DATE="2017-09-17"
 MY_URL="https://github.com/devilbox/vhost-gen"
 MY_AUTHOR="cytopia <cytopia@everythingcli.org>"
 MY_GPGKEY="0xA02C56F0"
