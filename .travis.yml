@@ -1,0 +1,25 @@
+###
+### Sudo required
+###
+sudo: required
+
+
+###
+### Set language
+###
+language: bash
+
+
+###
+### Install required software
+###
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install -y shellcheck
+
+
+###
+### Run tests
+###
+script:
+  - shellcheck  --shell=bash watcherd
