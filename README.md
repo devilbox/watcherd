@@ -1,5 +1,7 @@
 # watcherd
 
+[![Build Status](https://travis-ci.org/devilbox/watcherd.svg?branch=master)](https://travis-ci.org/devilbox/watcherd)
+
 watcherd will look for directory changes (added and deleted directories) under the specified path (`-p`) and will execute specified commands or shell scripts (`-a`, `-d`) depending on the event.
 Once all events have happened during one round (`-i`), a trigger command can be executed (`-t`).
 Note, the trigger command will only be execute when at least one add or delete command has succeeded with exit code 0.
@@ -34,10 +36,10 @@ Required arguments:
   -p <path>     Path to directoy to watch for changes.
   -a <cmd>      Command to execute when a directory was added.
                 The full path of the new dir will be appended as an argument to
-				this command.
+                this command.
   -d <cmd>      Command to execute when a directory was deletd.
                 The full path of the new dir will be appended as an argument to
-				this command.
+                this command.
 
 Optional arguments:
   -t <cmd>      Command to execute after all directories have been added or

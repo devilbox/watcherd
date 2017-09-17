@@ -278,7 +278,7 @@ if [ "${WATCHER}" = "inotify" ]; then
 		--event delete \
 		--event move \
 		--format '%e/\\%w%f' \
-	"${WATCH_DIR}" | while read output; do
+	"${WATCH_DIR}" | while read -r output; do
 		d="${output##*\\}"
 		if [[ "${output}" =~ ^(CREATE|MOVED_TO),ISDIR/\\ ]]; then
 			if action "${d}" "${CMD_ADD}" "ADD" "${VERBOSE}"; then
@@ -334,6 +334,6 @@ else
 		ALL_DIRS="${NEW_DIRS}"
 
 		# Wait before restarting loop
-		sleep ${INTERVAL}
+		sleep "${INTERVAL}"
 	done
 fi
