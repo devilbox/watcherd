@@ -35,11 +35,15 @@ code 0.
 Required arguments:
   -p <path>     Path to directoy to watch for changes.
   -a <cmd>      Command to execute when a directory was added.
-                The full path of the new dir will be appended as an argument to
-                this command.
+                You can also append the following placeholders to your command string:
+                %p The full path of the directory that changed (added, deleted).
+                %n The name of the directory that changed (added, deleted).
+                Example: -a "script.sh -f %p -c %n -a %p"
   -d <cmd>      Command to execute when a directory was deletd.
-                The full path of the new dir will be appended as an argument to
-                this command.
+                You can also append the following placeholders to your command string:
+                %p The full path of the directory that changed (added, deleted).
+                %n The name of the directory that changed (added, deleted).
+                Example: -d "script.sh -f %p -c %n -a %p"
 
 Optional arguments:
   -t <cmd>      Command to execute after all directories have been added or

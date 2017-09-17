@@ -65,12 +65,21 @@ function print_help() {
 	printf "\nRequired arguments:\n"
 	printf "  -p <path>     %s\n" "Path to directoy to watch for changes."
 	printf "  -a <cmd>      %s\n" "Command to execute when a directory was added."
-	printf "                %s\n" "The full path of the new dir will be appended as an argument to this command."
+	printf "                %s\n" "You can also append the following placeholders to your command string:"
+	printf "                %s\n" "%p The full path of the directory that changed (added, deleted)."
+	printf "                %s\n" "%n The name of the directory that changed (added, deleted)."
+	printf "                %s\n" "Example: -a \"script.sh -f %p -c %n -a %p\""
 	printf "  -d <cmd>      %s\n" "Command to execute when a directory was deletd."
-	printf "                %s\n" "The full path of the new dir will be appended as an argument to this command."
+	printf "                %s\n" "You can also append the following placeholders to your command string:"
+	printf "                %s\n" "%p The full path of the directory that changed (added, deleted)."
+	printf "                %s\n" "%n The name of the directory that changed (added, deleted)."
+	printf "                %s\n" "Example: -b \"script.sh -f %p -c %n -a %p\""
 	printf "\nOptional arguments:\n"
 	printf "  -t <cmd>      %s\n" "Command to execute after all directories have been added or deleted during one round."
 	printf "                %s\n" "No argument will be appended."
+	printf "                %s\n" "%p The full path of the directory that changed (added, deleted)."
+	printf "                %s\n" "%n The name of the directory that changed (added, deleted)."
+	printf "                %s\n" "Example: -t \"script.sh -f %p -c %n -a %p\""
 	printf "  -w <str>      %s\n" "The directory watcher to use. Valid values are:"
 	printf "                %s\n" "'inotify': Uses inotifywait to watch for directory changes."
 	printf "                %s\n" "'bash':    Uses a bash loop to watch for directory changes."
@@ -101,8 +110,14 @@ function action() {
 	local action="${2}"     # Add/Del command to execute
 	local info="${3}"       # Output text (ADD or DEL) for verbose mode
 	local verbose="${4}"    # Verbose?
+	local name
+	name="$( basename "${directory}" )"
 
-	if eval "${action} ${directory}"; then
+	# Fill with placeholder values
+	action="${action//%p/${directory}}"
+	action="${action//%n/${name}}"
+
+	if eval "${action}"; then
 		if [ "${verbose}" -gt "0" ]; then
 			printf "[%s] [OK]  %s succeeded: %s\n" "$( date '+%Y-%m-%d %H:%M:%S' )" "${info}" "${directory}"
 		fi
