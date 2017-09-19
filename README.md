@@ -21,10 +21,16 @@ You can specify the placeholders as many times as you want. See the following ex
 
 ### Examples
 
-Assuming [vhost_add.py](https://github.com/devilbox/vhost-gen) will add nginx vhost config files, the following will then be able to create new nginx vhosts on-the-fly, simply by adding or deleting folders in your main www directory. The trigger command will simply force nginx to reload its configuration after directory changes occured.
+By using [vhost_gen.py](https://github.com/devilbox/vhost-gen) (which will create nginx vhost config files), the following will be able to create new nginx vhosts on-the-fly, simply by adding or deleting folders in your main www directory. The trigger command will simply force nginx to reload its configuration after directory changes occured.
 
 ```shell
-watcherd -p /var/www -a "vhost_add.py -p %p -n %n" -d "rm %p" -t "nginx -s stop"
+# %n will be replaced by watcherd with the new directory name
+# %p will be replaced by watcherd with the new directory path
+watcherd -v \
+  -p /shared/httpd \
+  -a "vhost_gen.py -p %p -n %n -s" \
+  -d "rm /etc/nginx/conf.d/%n.conf" \
+  -t "nginx -s reload"
 ```
 
 ### Usage
