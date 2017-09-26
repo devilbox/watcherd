@@ -119,12 +119,12 @@ function action() {
 
 	if eval "${action}"; then
 		if [ "${verbose}" -gt "0" ]; then
-			printf "[%s] [OK]  %s succeeded: %s\n" "$( date '+%Y-%m-%d %H:%M:%S' )" "${info}" "${directory}"
+			printf "%s: [%s] [OK]  %s succeeded: %s\n" "${MY_NAME}" "$( date '+%Y-%m-%d %H:%M:%S' )" "${info}" "${directory}"
 		fi
 		return 0
 	else
 		if [ "${verbose}" -gt "0" ]; then
-			printf "[%s] [ERR] %s failed:    %s\n" "$( date '+%Y-%m-%d %H:%M:%S' )" "${info}" "${directory}"
+			printf "%s: [%s] [ERR] %s failed:    %s\n" "${MY_NAME}" "$( date '+%Y-%m-%d %H:%M:%S' )" "${info}" "${directory}"
 		fi
 		return 1
 	fi
@@ -140,12 +140,12 @@ function trigger() {
 		if [ "${changes}" -eq "1" ]; then
 			if  eval "${action}"; then
 				if [ "${verbose}" -gt "0" ]; then
-					printf "[%s] [OK]  %s succeeded: %s\n" "$( date '+%Y-%m-%d %H:%M:%S' )" "TRIGGER" "${action}"
+					printf "%s: [%s] [OK]  %s succeeded: %s\n" "${MY_NAME}" "$( date '+%Y-%m-%d %H:%M:%S' )" "TRIGGER" "${action}"
 				fi
 				return 0
 			else
 				if [ "${verbose}" -gt "0" ]; then
-					printf "[%s] [ERR] %s failed:    %s\n" "$( date '+%Y-%m-%d %H:%M:%S' )" "TRIGGER" "${action}"
+					printf "%s: [%s] [ERR] %s failed:    %s\n" "${MY_NAME}" "$( date '+%Y-%m-%d %H:%M:%S' )" "TRIGGER" "${action}"
 				fi
 				# Also return 0 here in order to not abort the loop
 				return 0
@@ -256,8 +256,13 @@ fi
 # Main entrypoint
 ############################################################
 
-CHANGES=0
+# Log startup
+if [ "${VERBOSE}" -gt "0" ]; then
+	printf "%s: [%s] Starting daemon.\n" "${MY_NAME}" "$( date '+%Y-%m-%d %H:%M:%S' )"
+fi
 
+
+CHANGES=0
 ALL_DIRS="$( get_subdirs "${WATCH_DIR}" )"
 
 if [ "${WITHOUT_SUBSHELL}" -eq "1" ]; then
@@ -283,7 +288,7 @@ CHANGES=0
 # Use native inotify
 if [ "${WATCHER}" = "inotify" ]; then
 	if [ "${VERBOSE}" -gt "0" ]; then
-		echo "Using native inotify to watch for changes."
+		printf "%s: [%s] Using native inotify to watch for changes.\n" "${MY_NAME}" "$( date '+%Y-%m-%d %H:%M:%S' )"
 	fi
 	inotifywait \
 		--quiet \
@@ -308,7 +313,7 @@ if [ "${WATCHER}" = "inotify" ]; then
 # Use custom inotify
 else
 	if [ "${VERBOSE}" -gt "0" ]; then
-		echo "Using bash loop to watch for changes."
+		printf "%s: [%s] Using bash loop to watch for changes.\n" "${MY_NAME}" "$( date '+%Y-%m-%d %H:%M:%S' )"
 	fi
 	while true; do
 		# Get all directories
