@@ -6,6 +6,12 @@ watcherd will look for directory changes (added and deleted directories) under t
 Once all events have happened during one round (`-i`), a trigger command can be executed (`-t`).
 Note, the trigger command will only be execute when at least one add or delete command has succeeded with exit code 0.
 
+---
+
+If you need the same functionality to monitor changes of listening ports, check out **[watcherp](https://github.com/devilbox/watcherp)**.
+
+---
+
 ### Modes
 
 watcherd can either use the native [inotifywait](https://linux.die.net/man/1/inotifywait) implementation or if this is not available on your system use a custom bash implementation. The default is to use bash.
