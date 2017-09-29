@@ -25,8 +25,8 @@ IFS=$'\n'
 
 # Versioning
 MY_NAME="watcherd"
-MY_DATE="2017-09-17"
-MY_URL="https://github.com/devilbox/vhost-gen"
+MY_DATE="2017-09-29"
+MY_URL="https://github.com/devilbox/watcherd"
 MY_AUTHOR="cytopia <cytopia@everythingcli.org>"
 MY_GPGKEY="0xA02C56F0"
 MY_VERSION="0.1"
@@ -77,9 +77,6 @@ function print_help() {
 	printf "\nOptional arguments:\n"
 	printf "  -t <cmd>      %s\n" "Command to execute after all directories have been added or deleted during one round."
 	printf "                %s\n" "No argument will be appended."
-	printf "                %s\n" "%p The full path of the directory that changed (added, deleted)."
-	printf "                %s\n" "%n The name of the directory that changed (added, deleted)."
-	printf "                %s\n" "Example: -t \"script.sh -f %p -c %n -a %p\""
 	printf "  -w <str>      %s\n" "The directory watcher to use. Valid values are:"
 	printf "                %s\n" "'inotify': Uses inotifywait to watch for directory changes."
 	printf "                %s\n" "'bash':    Uses a bash loop to watch for directory changes."
