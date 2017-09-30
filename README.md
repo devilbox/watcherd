@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/devilbox/watcherd.svg?branch=master)](https://travis-ci.org/devilbox/watcherd)
 
-watcherd will look for directory changes (added and deleted directories) under the specified path (`-p`) and will execute specified commands or shell scripts (`-a`, `-d`) depending on the event.
+**[watcherd](https://github.com/devilbox/watcherp/blob/master/watcherd)** will look for directory changes (added and deleted directories) under the specified path (`-p`) and will execute specified commands or shell scripts (`-a`, `-d`) depending on the event.
 Once all events have happened during one round (`-i`), a trigger command can be executed (`-t`).
 Note, the trigger command will only be execute when at least one add or delete command has succeeded with exit code 0.
 
@@ -14,7 +14,7 @@ If you need the same functionality to monitor changes of listening ports, check 
 
 ### Modes
 
-watcherd can either use the native [inotifywait](https://linux.die.net/man/1/inotifywait) implementation or if this is not available on your system use a custom bash implementation. The default is to use bash.
+**[watcherd](https://github.com/devilbox/watcherp/blob/master/watcherd)** can either use the native [inotifywait](https://linux.die.net/man/1/inotifywait) implementation or if this is not available on your system use a custom bash implementation. The default is to use bash.
 
 ### Placeholders
 
@@ -27,7 +27,7 @@ You can specify the placeholders as many times as you want. See the following ex
 
 ### Examples
 
-By using [vhost_gen.py](https://github.com/devilbox/vhost-gen) (which will create nginx vhost config files), the following will be able to create new nginx vhosts on-the-fly, simply by adding or deleting folders in your main www directory. The trigger command will simply force nginx to reload its configuration after directory changes occured.
+By using **[vhost_gen.py](https://github.com/devilbox/vhost-gen)** (which is capable of creating Nginx or Apache vhost config files for normal vhosts or reverse proxies), the following will be able to create new nginx vhosts on-the-fly, simply by adding or deleting folders in your main www directory. The trigger command will simply force nginx to reload its configuration after directory changes occured.
 
 ```shell
 # %n will be replaced by watcherd with the new directory name

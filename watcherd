@@ -25,7 +25,7 @@ IFS=$'\n'
 
 # Versioning
 MY_NAME="watcherd"
-MY_DATE="2017-09-29"
+MY_DATE="2017-09-30"
 MY_URL="https://github.com/devilbox/watcherd"
 MY_AUTHOR="cytopia <cytopia@everythingcli.org>"
 MY_GPGKEY="0xA02C56F0"
@@ -298,11 +298,11 @@ if [ "${WATCHER}" = "inotify" ]; then
 	"${WATCH_DIR}" | while read -r output; do
 		d="${output##*\\}"
 		if [[ "${output}" =~ ^(CREATE|MOVED_TO),ISDIR/\\ ]]; then
-			if action "${d}" "${CMD_ADD}" "ADD" "${VERBOSE}"; then
+			if action "${d}" "${CMD_ADD}" "ADD:" "${VERBOSE}"; then
 				trigger "${CMD_TRIGGER}" "1" "${VERBOSE}"
 			fi
 		elif [[ "${output}" =~ ^(DELETE|MOVED_FROM),ISDIR/\\ ]]; then
-			if action "${d}" "${CMD_DEL}" "DEL" "${VERBOSE}"; then
+			if action "${d}" "${CMD_DEL}" "DEL:" "${VERBOSE}"; then
 				trigger "${CMD_TRIGGER}" "1" "${VERBOSE}"
 			fi
 		fi
@@ -329,14 +329,14 @@ else
 
 		# Run ADD command
 		for d in $ADD_DIRS; do
-			if action "${d}" "${CMD_ADD}" "ADD" "${VERBOSE}"; then
+			if action "${d}" "${CMD_ADD}" "ADD:" "${VERBOSE}"; then
 				CHANGES=1
 			fi
 		done
 
 		# Run DEL command
 		for d in $DEL_DIRS; do
-			if action "${d}" "${CMD_DEL}" "DEL" "${VERBOSE}"; then
+			if action "${d}" "${CMD_DEL}" "DEL:" "${VERBOSE}"; then
 				CHANGES=1
 			fi
 		done
