@@ -1,6 +1,6 @@
 # watcherd
 
-[![Build Status](https://travis-ci.org/devilbox/watcherd.svg?branch=master)](https://travis-ci.org/devilbox/watcherd)
+[![linting](https://github.com/devilbox/watcherd/workflows/linting/badge.svg)](https://github.com/devilbox/watcherd/actions?query=workflow%3Alinting)
 
 **[watcherd](https://github.com/devilbox/watcherp/blob/master/watcherd)** will look for directory changes (added and deleted directories) under the specified path (`-p`) and will execute specified commands or shell scripts (`-a`, `-d`) depending on the event.
 Once all events have happened during one round (`-i`), a trigger command can be executed (`-t`).
