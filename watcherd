@@ -53,53 +53,58 @@ WITHOUT_SUBSHELL=1
 ############################################################
 
 function print_help() {
-	printf "Usage: %s %s\n" "${MY_NAME}" "-p <path> -a <cmd> -d <cmd> [-t <cmd> -w <str> -i <int> -v]"
-	printf "       %s %s\n" "${MY_NAME}" "--help"
-	printf "       %s %s\n" "${MY_NAME}" "--version"
-	printf "\n"
-	printf "%s\n" "${MY_NAME} will look for directory changes (added and deleted directories) under the specified"
-	printf "path (-p) and will execute specified commands or shell scripts (-a, -d) depending on the event.\n"
-	printf "Once all events have happened during one round (-i), a trigger command can be executed (-t).\n"
+	printf "Usage: %s %s\\n" "${MY_NAME}" "-p <path> -a <cmd> -d <cmd> [-t <cmd> -w <str> -i <int> -v]"
+	printf "       %s %s\\n" "${MY_NAME}" "--help"
+	printf "       %s %s\\n" "${MY_NAME}" "--version"
+	printf "\\n"
+	printf "%s\\n" "${MY_NAME} will look for directory changes (added and deleted directories) under the specified"
+	printf "path (-p) and will execute specified commands or shell scripts (-a, -d) depending on the event.\\n"
+	printf "Once all events have happened during one round (-i), a trigger command can be executed (-t).\\n"
 	printf "Note, the trigger command will only be execute when at least one add or delete command has succeeded with exit code 0."
-	printf "\n"
-	printf "\nRequired arguments:\n"
-	printf "  -p <path>     %s\n" "Path to directoy to watch for changes."
-	printf "  -a <cmd>      %s\n" "Command to execute when a directory was added."
-	printf "                %s\n" "You can also append the following placeholders to your command string:"
-	printf "                %s\n" "%p The full path of the directory that changed (added, deleted)."
-	printf "                %s\n" "%n The name of the directory that changed (added, deleted)."
-	printf "                %s\n" "Example: -a \"script.sh -f %p -c %n -a %p\""
-	printf "  -d <cmd>      %s\n" "Command to execute when a directory was deletd."
-	printf "                %s\n" "You can also append the following placeholders to your command string:"
-	printf "                %s\n" "%p The full path of the directory that changed (added, deleted)."
-	printf "                %s\n" "%n The name of the directory that changed (added, deleted)."
-	printf "                %s\n" "Example: -b \"script.sh -f %p -c %n -a %p\""
-	printf "\nOptional arguments:\n"
-	printf "  -t <cmd>      %s\n" "Command to execute after all directories have been added or deleted during one round."
-	printf "                %s\n" "No argument will be appended."
-	printf "  -w <str>      %s\n" "The directory watcher to use. Valid values are:"
-	printf "                %s\n" "'inotify': Uses inotifywait to watch for directory changes."
-	printf "                %s\n" "'bash':    Uses a bash loop to watch for directory changes."
-	printf "                %s\n" "The default is to use 'bash' as the watcher."
-	printf "  -i <int>      %s\n" "When using the bash watcher, specify the interval in seconds for how often"
-	printf "                %s\n" "to look for directory changes."
-	printf "  -v            %s\n" "Verbose output."
-	printf "\nMisc arguments:\n"
-	printf "  --help        %s\n" "Show this help screen."
-	printf "  --version     %s\n" "Show version information."
+	printf "\\n"
+	printf "\\nRequired arguments:\\n"
+	printf "  -p <path>     %s\\n" "Path to directoy to watch for changes."
+	printf "  -a <cmd>      %s\\n" "Command to execute when a directory was added."
+	printf "                %s\\n" "You can also append the following placeholders to your command string:"
+	printf "                %s\\n" "%p The full path of the directory that changed (added, deleted)."
+	printf "                %s\\n" "%n The name of the directory that changed (added, deleted)."
+	printf "                %s\\n" "Example: -a \"script.sh -f %p -c %n -a %p\""
+	printf "  -d <cmd>      %s\\n" "Command to execute when a directory was deletd."
+	printf "                %s\\n" "You can also append the following placeholders to your command string:"
+	printf "                %s\\n" "%p The full path of the directory that changed (added, deleted)."
+	printf "                %s\\n" "%n The name of the directory that changed (added, deleted)."
+	printf "                %s\\n" "Example: -b \"script.sh -f %p -c %n -a %p\""
+	printf "\\nOptional arguments:\\n"
+	printf "  -t <cmd>      %s\\n" "Command to execute after all directories have been added or deleted during one round."
+	printf "                %s\\n" "No argument will be appended."
+	printf "  -w <str>      %s\\n" "The directory watcher to use. Valid values are:"
+	printf "                %s\\n" "'inotify': Uses inotifywait to watch for directory changes."
+	printf "                %s\\n" "'bash':    Uses a bash loop to watch for directory changes."
+	printf "                %s\\n" "The default is to use 'bash' as the watcher."
+	printf "  -i <int>      %s\\n" "When using the bash watcher, specify the interval in seconds for how often"
+	printf "                %s\\n" "to look for directory changes."
+	printf "  -v            %s\\n" "Verbose output."
+	printf "\\nMisc arguments:\\n"
+	printf "  --help        %s\\n" "Show this help screen."
+	printf "  --version     %s\\n" "Show version information."
 }
 
 function print_version() {
-	printf "Name:    %s\n" "${MY_NAME}"
-	printf "Version: %s (%s)\n" "${MY_VERSION}" "${MY_DATE}"
-	printf "Author:  %s (%s)\n" "${MY_AUTHOR}" "${MY_GPGKEY}"
-	printf "License: %s\n" "${MY_LICENSE}"
-	printf "URL:     %s\n" "${MY_URL}"
+	printf "Name:    %s\\n" "${MY_NAME}"
+	printf "Version: %s (%s)\\n" "${MY_VERSION}" "${MY_DATE}"
+	printf "Author:  %s (%s)\\n" "${MY_AUTHOR}" "${MY_GPGKEY}"
+	printf "License: %s\\n" "${MY_LICENSE}"
+	printf "URL:     %s\\n" "${MY_URL}"
 }
 
 function get_subdirs() {
 	local path="${1}"
-	find "${path}" -type d \! -name "$( basename "${path}" )" -prune | sort
+	# shellcheck disable=SC2016
+	find "${path}" \
+		| grep -Ev "^${path}\$" \
+		| grep -Ev "^${path}/.+/" \
+		| xargs -n1 sh -c 'if [ -d "${1}" ]; then echo "${1}"; fi'  -- \
+		| sort
 }
 
 function action() {
@@ -116,12 +121,12 @@ function action() {
 
 	if eval "${action}"; then
 		if [ "${verbose}" -gt "0" ]; then
-			printf "%s: [%s] [OK]  %s succeeded: %s\n" "${MY_NAME}" "$( date '+%Y-%m-%d %H:%M:%S' )" "${info}" "${directory}"
+			printf "%s: [%s] [OK]  %s succeeded: %s\\n" "${MY_NAME}" "$( date '+%Y-%m-%d %H:%M:%S' )" "${info}" "${directory}"
 		fi
 		return 0
 	else
 		if [ "${verbose}" -gt "0" ]; then
-			printf "%s: [%s] [ERR] %s failed:    %s\n" "${MY_NAME}" "$( date '+%Y-%m-%d %H:%M:%S' )" "${info}" "${directory}"
+			printf "%s: [%s] [ERR] %s failed:    %s\\n" "${MY_NAME}" "$( date '+%Y-%m-%d %H:%M:%S' )" "${info}" "${directory}"
 		fi
 		return 1
 	fi
@@ -137,12 +142,12 @@ function trigger() {
 		if [ "${changes}" -eq "1" ]; then
 			if  eval "${action}"; then
 				if [ "${verbose}" -gt "0" ]; then
-					printf "%s: [%s] [OK]  %s succeeded: %s\n" "${MY_NAME}" "$( date '+%Y-%m-%d %H:%M:%S' )" "TRIGGER" "${action}"
+					printf "%s: [%s] [OK]  %s succeeded: %s\\n" "${MY_NAME}" "$( date '+%Y-%m-%d %H:%M:%S' )" "TRIGGER" "${action}"
 				fi
 				return 0
 			else
 				if [ "${verbose}" -gt "0" ]; then
-					printf "%s: [%s] [ERR] %s failed:    %s\n" "${MY_NAME}" "$( date '+%Y-%m-%d %H:%M:%S' )" "TRIGGER" "${action}"
+					printf "%s: [%s] [ERR] %s failed:    %s\\n" "${MY_NAME}" "$( date '+%Y-%m-%d %H:%M:%S' )" "TRIGGER" "${action}"
 				fi
 				# Also return 0 here in order to not abort the loop
 				return 0
@@ -255,7 +260,7 @@ fi
 
 # Log startup
 if [ "${VERBOSE}" -gt "0" ]; then
-	printf "%s: [%s] Starting daemon.\n" "${MY_NAME}" "$( date '+%Y-%m-%d %H:%M:%S' )"
+	printf "%s: [%s] Starting daemon.\\n" "${MY_NAME}" "$( date '+%Y-%m-%d %H:%M:%S' )"
 fi
 
 
@@ -285,7 +290,7 @@ CHANGES=0
 # Use native inotify
 if [ "${WATCHER}" = "inotify" ]; then
 	if [ "${VERBOSE}" -gt "0" ]; then
-		printf "%s: [%s] Using native inotify to watch for changes.\n" "${MY_NAME}" "$( date '+%Y-%m-%d %H:%M:%S' )"
+		printf "%s: [%s] Using native inotify to watch for changes.\\n" "${MY_NAME}" "$( date '+%Y-%m-%d %H:%M:%S' )"
 	fi
 	inotifywait \
 		--quiet \
@@ -310,7 +315,7 @@ if [ "${WATCHER}" = "inotify" ]; then
 # Use custom inotify
 else
 	if [ "${VERBOSE}" -gt "0" ]; then
-		printf "%s: [%s] Using bash loop to watch for changes.\n" "${MY_NAME}" "$( date '+%Y-%m-%d %H:%M:%S' )"
+		printf "%s: [%s] Using bash loop to watch for changes.\\n" "${MY_NAME}" "$( date '+%Y-%m-%d %H:%M:%S' )"
 	fi
 	while true; do
 		# Get all directories
