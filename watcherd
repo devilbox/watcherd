@@ -100,10 +100,10 @@ function print_version() {
 function get_subdirs() {
 	local path="${1}"
 	# shellcheck disable=SC2016
-	find "${path}" \
+	(find "${path}" || true) \
 		| grep -Ev "^${path}\$" \
 		| grep -Ev "^${path}/.+/" \
-		| xargs -n1 sh -c 'if [ -d "${1}" ]; then echo "${1}"; fi'  -- \
+		| xargs -n1 sh -c 'if [ -d "${1}" ]; then echo "${1}"; fi' -- \
 		| sort
 }
 
