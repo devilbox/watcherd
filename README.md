@@ -2,6 +2,10 @@
 
 [![linting](https://github.com/devilbox/watcherd/workflows/linting/badge.svg)](https://github.com/devilbox/watcherd/actions?query=workflow%3Alinting)
 
+[![test-linux](https://github.com/devilbox/watcherd/workflows/test-linux/badge.svg)](https://github.com/devilbox/watcherd/actions?query=workflow%3Atest-linux)
+[![test-macos](https://github.com/devilbox/watcherd/workflows/test-macos/badge.svg)](https://github.com/devilbox/watcherd/actions?query=workflow%3Atest-macos)
+[![test-windows](https://github.com/devilbox/watcherd/workflows/test-windows/badge.svg)](https://github.com/devilbox/watcherd/actions?query=workflow%3Atest-windows)
+
 **[watcherd](https://github.com/devilbox/watcherp/blob/master/watcherd)** will look for directory changes (added and deleted directories) under the specified path (`-p`) and will execute specified commands or shell scripts (`-a`, `-d`) depending on the event.
 Once all events have happened during one round (`-i`), a trigger command can be executed (`-t`).
 Note, the trigger command will only be execute when at least one add or delete command has succeeded with exit code 0.
