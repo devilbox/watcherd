@@ -26,6 +26,9 @@ mkdir -p "${DIR_PATH}/dir 1"
 mkdir -p "${DIR_PATH}/dir 2"
 mkdir -p "${DIR_PATH}/dir 3"
 mkdir -p "${DIR_PATH}/dir 4"
+mkdir -p "${DIR_PATH}/dir 4/subdir"
+touch    "${DIR_PATH}/file 1"
+touch    "${DIR_PATH}/file 2"
 
 
 ###
