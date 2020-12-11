@@ -25,11 +25,11 @@ IFS=$'\n'
 
 # Versioning
 MY_NAME="watcherd"
-MY_DATE="2017-09-30"
+MY_DATE="2020-12-11"
 MY_URL="https://github.com/devilbox/watcherd"
 MY_AUTHOR="cytopia <cytopia@everythingcli.org>"
 MY_GPGKEY="0xA02C56F0"
-MY_VERSION="0.1"
+MY_VERSION="1.0.2"
 MY_LICENSE="MIT"
 
 # Default settings
@@ -100,10 +100,21 @@ function print_version() {
 function get_subdirs() {
 	local path="${1}"
 	# shellcheck disable=SC2016
-	(find "${path}" || true) \
-		| grep -Ev "^${path}\$" \
-		| grep -Ev "^${path}/.+/" \
-		| xargs -n1 sh -c 'if [ -d "${1}" ]; then echo "${1}"; fi' -- \
+	#(find "${path}" -type d -print0 || true) \
+	#	| xargs -0 -n1 sh -c 'if [ -d "${1}" ]; then echo "${1}"; fi' -- \
+	#	| grep -Ev "^${path}\$" \
+	#	| grep -Ev "^${path}/.+/" \
+	#	| sort
+	path="${path%/}/"
+	(ls -1 -a "${path}" || true) \
+		| tr '\r\n' '\000' \
+		| tr '\n' '\000' \
+		| tr '\r' '\000' \
+		| xargs \
+			-0 \
+			-P"$(getconf _NPROCESSORS_ONLN)" \
+			-n1 \
+			sh -c "if [ -d \"${path}\${1}\" ] && [ \"\${1}\" != \".\" ] && [ \"\${1}\" != \"..\" ]; then echo \"${path}\${1}\"; fi" -- \
 		| sort
 }
 
