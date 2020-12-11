@@ -3,6 +3,9 @@ name: test-macos
 on:
   pull_request:
   push:
+    branches:
+      - master
+    tags:
 
 jobs:
   test:

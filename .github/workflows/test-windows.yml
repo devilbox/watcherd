@@ -3,6 +3,9 @@ name: test-windows
 on:
   pull_request:
   push:
+    branches:
+      - master
+    tags:
 
 jobs:
   test:

@@ -14,6 +14,7 @@ DIR_PATH="${SCRIPT_PATH}/dirs"
 cleanup() {
 	rm -rf "${DIR_PATH}" || true
 	rm -rf "${SCRIPT_PATH}/01.actual" || true
+	rm -rf "${SCRIPT_PATH}/01.expected" || true
 }
 
 
@@ -28,7 +29,18 @@ mkdir -p "${DIR_PATH}/dir 4"
 
 
 ###
-### 02. Run watcherd
+### 02. Setup expected
+###
+{
+	echo "add: ./dir 1";
+	echo "add: ./dir 2";
+	echo "add: ./dir 3";
+	echo "add: ./dir 4";
+} > "${SCRIPT_PATH}/01.expected"
+
+
+###
+### 03. Run watcherd
 ###
 cd "${DIR_PATH}"
 "${BIN_PATH}/watcherd" -p "." -a "echo 'add: %p'" -d "echo 'del: %p'" > "${SCRIPT_PATH}/01.actual" &
@@ -38,8 +50,9 @@ echo "Waiting 5 sec."
 sleep 5
 
 
+
 ###
-### 03 .Compare results and shutdown
+### 04 .Compare results and shutdown
 ###
 echo "Diff results"
 if ! diff "${SCRIPT_PATH}/01.actual" "${SCRIPT_PATH}/01.expected"; then
