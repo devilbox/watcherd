@@ -1,5 +1,6 @@
 # watcherd
 
+![tag](https://img.shields.io/github/v/tag/devilbox/watcherd.svg?colorB=orange&sort=semver)
 [![linting](https://github.com/devilbox/watcherd/workflows/linting/badge.svg)](https://github.com/devilbox/watcherd/actions?query=workflow%3Alinting)
 [![test-linux](https://github.com/devilbox/watcherd/workflows/test-linux/badge.svg)](https://github.com/devilbox/watcherd/actions?query=workflow%3Atest-linux)
 [![test-macos](https://github.com/devilbox/watcherd/workflows/test-macos/badge.svg)](https://github.com/devilbox/watcherd/actions?query=workflow%3Atest-macos)
