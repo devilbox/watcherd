@@ -15,6 +15,7 @@ cleanup() {
 	rm -rf "${DIR_PATH}" || true
 	rm -rf "${SCRIPT_PATH}/01.actual" || true
 	rm -rf "${SCRIPT_PATH}/01.expected" || true
+	rm -rf "${SCRIPT_PATH}/01.tmp" || true
 }
 
 
@@ -35,10 +36,10 @@ touch    "${DIR_PATH}/file 2"
 ### 02. Setup expected
 ###
 {
-	echo "add: ./dir 1";
-	echo "add: ./dir 2";
-	echo "add: ./dir 3";
-	echo "add: ./dir 4";
+	echo "[OK]  ADD: succeeded: ./dir 1"
+	echo "[OK]  ADD: succeeded: ./dir 2"
+	echo "[OK]  ADD: succeeded: ./dir 3"
+	echo "[OK]  ADD: succeeded: ./dir 4"
 } > "${SCRIPT_PATH}/01.expected"
 
 
@@ -46,13 +47,13 @@ touch    "${DIR_PATH}/file 2"
 ### 03. Run watcherd
 ###
 cd "${DIR_PATH}"
-"${BIN_PATH}/watcherd" -p "." -a "echo 'add: %p'" -d "echo 'del: %p'" > "${SCRIPT_PATH}/01.actual" &
+"${BIN_PATH}/watcherd" -v -p "." -a "echo 'add: %p'" -d "echo 'del: %p'" > "${SCRIPT_PATH}/01.tmp" &
 watch_pid="${!}"
 echo "Started watcherd with pid: ${watch_pid}"
 echo "Waiting 5 sec."
 sleep 5
 
-
+cat "${SCRIPT_PATH}/01.tmp" | grep -Eo '\[OK.*' > "${SCRIPT_PATH}/01.actual"
 
 ###
 ### 04 .Compare results and shutdown
