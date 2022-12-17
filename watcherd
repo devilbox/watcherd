@@ -29,7 +29,7 @@ MY_DATE="2022-12-17"
 MY_URL="https://github.com/devilbox/watcherd"
 MY_AUTHOR="cytopia <cytopia@everythingcli.org>"
 MY_GPGKEY="0xA02C56F0"
-MY_VERSION="1.0.3"
+MY_VERSION="1.0.4"
 MY_LICENSE="MIT"
 
 # Default settings
@@ -130,7 +130,7 @@ function action() {
 	action="${action//%p/${directory}}"
 	action="${action//%n/${name}}"
 
-	if OUTPUT="$( eval "${action}" 2>&1 )"; then
+	if eval "${action}"; then
 		if [ "${verbose}" -gt "0" ]; then
 			printf "%s: [%s] [OK]  %s succeeded: %s\\n" "${MY_NAME}" "$( date '+%Y-%m-%d %H:%M:%S' )" "${info}" "${directory}"
 		fi
@@ -138,9 +138,6 @@ function action() {
 	else
 		printf "%s: [%s] [ERR] %s failed:    %s\\n" "${MY_NAME}" "$( date '+%Y-%m-%d %H:%M:%S' )" "${info}" "${directory}" >&2
 		printf "%s: [%s] [ERR] %s failed:    %s\\n" "${MY_NAME}" "$( date '+%Y-%m-%d %H:%M:%S' )" "${info}" "${action}" >&2
-		if [ -n "${OUTPUT}" ]; then
-			printf "%s: [%s] [ERR] %s\\n" "${MY_NAME}" "$( date '+%Y-%m-%d %H:%M:%S' )" "${OUTPUT}" >&2
-		fi
 		return 1
 	fi
 }
@@ -153,16 +150,13 @@ function trigger() {
 	# Only run trigger when command has been specified (not empty)
 	if [ -n "${action}" ]; then
 		if [ "${changes}" -eq "1" ]; then
-			if OUTPUT="$( eval "${action}" 2>&1 )"; then
+			if eval "${action}"; then
 				if [ "${verbose}" -gt "0" ]; then
 					printf "%s: [%s] [OK]  %s succeeded: %s\\n" "${MY_NAME}" "$( date '+%Y-%m-%d %H:%M:%S' )" "TRIGGER" "${action}"
 				fi
 				return 0
 			else
 				printf "%s: [%s] [ERR] %s failed:    %s\\n" "${MY_NAME}" "$( date '+%Y-%m-%d %H:%M:%S' )" "TRIGGER" "${action}" >&2
-				if [ -n "${OUTPUT}" ]; then
-					printf "%s: [%s] [ERR] %s\\n" "${MY_NAME}" "$( date '+%Y-%m-%d %H:%M:%S' )" "${OUTPUT}" >&2
-				fi
 				# Also return 0 here in order to not abort the loop
 				return 0
 			fi
