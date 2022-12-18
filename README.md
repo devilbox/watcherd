@@ -6,7 +6,8 @@
 [![test-macos](https://github.com/devilbox/watcherd/workflows/test-macos/badge.svg)](https://github.com/devilbox/watcherd/actions?query=workflow%3Atest-macos)
 [![test-windows](https://github.com/devilbox/watcherd/workflows/test-windows/badge.svg)](https://github.com/devilbox/watcherd/actions?query=workflow%3Atest-windows)
 
-**[watcherd](https://github.com/devilbox/watcherp/blob/master/watcherd)** will look for directory changes (added and deleted directories) under the specified path (`-p`) and will execute specified commands or shell scripts (`-a`, `-d`) depending on the event.
+
+**[watcherd](https://github.com/devilbox/watcherd/blob/master/bin/watcherd)** will look for directory changes (added and deleted directories) under the specified path (`-p`) and will execute specified commands or shell scripts (`-a`, `-d`) depending on the event.
 Once all events have happened during one round (`-i`), a trigger command can be executed (`-t`).
 Note, the trigger command will only be execute when at least one add or delete command has succeeded with exit code 0.
 
@@ -18,7 +19,7 @@ If you need the same functionality to monitor changes of listening ports, check 
 
 ### Modes
 
-**[watcherd](https://github.com/devilbox/watcherp/blob/master/watcherd)** can either use the native [inotifywait](https://linux.die.net/man/1/inotifywait) implementation or if this is not available on your system use a custom bash implementation. The default is to use bash.
+**[watcherd](https://github.com/devilbox/watcherd/blob/master/bin/watcherd)** can either use the native [inotifywait](https://linux.die.net/man/1/inotifywait) implementation or if this is not available on your system use a custom bash implementation. The default is to use bash.
 
 ### Placeholders
 

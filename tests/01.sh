@@ -6,7 +6,7 @@ set -o pipefail
 
 SCRIPT_PATH="$( cd "$(dirname "$0")" && pwd -P )"
 
-BIN_PATH="${SCRIPT_PATH}/.."
+BIN_PATH="${SCRIPT_PATH}/../bin"
 DIR_PATH="${SCRIPT_PATH}/dirs"
 
 
