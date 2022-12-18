@@ -36,10 +36,10 @@ touch    "${DIR_PATH}/file 2"
 ### 02. Setup expected
 ###
 {
-	echo "[OK]  ADD succeeded: ./dir 1"
-	echo "[OK]  ADD succeeded: ./dir 2"
-	echo "[OK]  ADD succeeded: ./dir 3"
-	echo "[OK]  ADD succeeded: ./dir 4"
+	echo "[OK]   ADD succeeded: ./dir 1"
+	echo "[OK]   ADD succeeded: ./dir 2"
+	echo "[OK]   ADD succeeded: ./dir 3"
+	echo "[OK]   ADD succeeded: ./dir 4"
 } > "${SCRIPT_PATH}/01.expected"
 
 
