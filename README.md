@@ -1,10 +1,11 @@
 # watcherd
 
 ![tag](https://img.shields.io/github/v/tag/devilbox/watcherd.svg?colorB=orange&sort=semver)
-[![linting](https://github.com/devilbox/watcherd/workflows/linting/badge.svg)](https://github.com/devilbox/watcherd/actions?query=workflow%3Alinting)
-[![test-linux](https://github.com/devilbox/watcherd/workflows/test-linux/badge.svg)](https://github.com/devilbox/watcherd/actions?query=workflow%3Atest-linux)
-[![test-macos](https://github.com/devilbox/watcherd/workflows/test-macos/badge.svg)](https://github.com/devilbox/watcherd/actions?query=workflow%3Atest-macos)
-[![test-windows](https://github.com/devilbox/watcherd/workflows/test-windows/badge.svg)](https://github.com/devilbox/watcherd/actions?query=workflow%3Atest-windows)
+[![linting](https://github.com/devilbox/watcherd/workflows/linting/badge.svg)](https://github.com/devilbox/watcherd/actions/workflows/linting.yml)
+[![test-linux](https://github.com/devilbox/watcherd/workflows/test-linux/badge.svg)](https://github.com/devilbox/watcherd/actions/workflows/test-linux.yml)
+[![test-macos](https://github.com/devilbox/watcherd/workflows/test-macos/badge.svg)](https://github.com/devilbox/watcherd/actions/workflows/test-macos.yml)
+[![test-windows](https://github.com/devilbox/watcherd/workflows/test-windows/badge.svg)](https://github.com/devilbox/watcherd/actions/workflows/test-windows.yml)
+[![License](https://img.shields.io/badge/license-MIT-%233DA639.svg)](https://opensource.org/licenses/MIT)
 
 
 **[watcherd](https://github.com/devilbox/watcherd/blob/master/bin/watcherd)** will look for directory changes (added and deleted directories) under the specified path (`-p`) and will execute specified commands or shell scripts (`-a`, `-d`) depending on the event.
@@ -32,14 +33,14 @@ You can specify the placeholders as many times as you want. See the following ex
 
 ### Examples
 
-By using **[vhost_gen.py](https://github.com/devilbox/vhost-gen)** (which is capable of creating Nginx or Apache vhost config files for normal vhosts or reverse proxies), the following will be able to create new nginx vhosts on-the-fly, simply by adding or deleting folders in your main www directory. The trigger command will simply force nginx to reload its configuration after directory changes occured.
+By using **[vhost-gen](https://github.com/devilbox/vhost-gen)** (which is capable of creating Nginx or Apache vhost config files for normal vhosts or reverse proxies), the following will be able to create new nginx vhosts on-the-fly, simply by adding or deleting folders in your main www directory. The trigger command will simply force nginx to reload its configuration after directory changes occured.
 
 ```shell
 # %n will be replaced by watcherd with the new directory name
 # %p will be replaced by watcherd with the new directory path
 watcherd -v \
   -p /shared/httpd \
-  -a "vhost_gen.py -p %p -n %n -s" \
+  -a "vhost-gen -p %p -n %n -s" \
   -d "rm /etc/nginx/conf.d/%n.conf" \
   -t "nginx -s reload"
 ```
@@ -87,3 +88,9 @@ Misc arguments:
   --help        Show this help screen.
   --version     Show version information.
 ```
+
+### License
+
+**[MIT License](LICENSE)**
+
+Copyright (c) 2017 [cytopia](https://github.com/cytopia)
