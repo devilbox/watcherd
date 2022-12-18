@@ -43,7 +43,7 @@ _lint-shell:
 	@echo "# -------------------------------------------------------------------- #"
 	@echo "# Shellcheck"
 	@echo "# -------------------------------------------------------------------- #"
-	@docker run --rm $$(tty -s && echo "-it" || echo) -v $(PWD):/mnt -w /mnt koalaman/shellcheck:stable watcherd
+	@docker run --rm $$(tty -s && echo "-it" || echo) -v $(PWD):/mnt -w /mnt koalaman/shellcheck:stable bin/watcherd
 
 
 # -------------------------------------------------------------------------------------------------
