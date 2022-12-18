@@ -25,14 +25,15 @@ IFS=$'\n'
 
 # Versioning
 MY_NAME="watcherd"
-MY_DATE="2022-12-17"
+MY_DATE="2022-12-18"
 MY_URL="https://github.com/devilbox/watcherd"
 MY_AUTHOR="cytopia <cytopia@everythingcli.org>"
 MY_GPGKEY="0xA02C56F0"
-MY_VERSION="1.0.6"
+MY_VERSION="1.0.7"
 MY_LICENSE="MIT"
 
 # Default settings
+COLORIZED=0
 INTERVAL=1
 VERBOSE=0
 WATCHER="bash"
@@ -52,8 +53,41 @@ WITHOUT_SUBSHELL=1
 # Functions
 ############################################################
 
+log() {
+	local type="${1}"      # err, warn, info, ok
+	local message="${2}"   # message to log
+
+	# https://unix.stackexchange.com/questions/124407/what-color-codes-can-i-use-in-my-bash-ps1-prompt
+	if [ "${COLORIZED:-}" = "1" ]; then
+		local clr_green="\033[0;32m"
+		local clr_yellow="\033[0;33m"
+		local clr_red="\033[0;31m"
+		local clr_rst="\033[0m"
+	else
+		local clr_green=
+		local clr_yellow=
+		local clr_red=
+		local clr_rst=
+	fi
+
+	if [ "${type}" = "err" ]; then
+		printf "%s: ${clr_red}[ERR]  %s${clr_rst}\n" "${MY_NAME}" "${message}" 1>&2	# stdout -> stderr
+	fi
+	if [ "${type}" = "warn" ]; then
+		printf "%s: ${clr_yellow}[WARN] %s${clr_rst}\n" "${MY_NAME}" "${message}" 1>&2	# stdout -> stderr
+	fi
+	if [ "${VERBOSE:-}" = "1" ]; then
+		if [ "${type}" = "info" ]; then
+			printf "%s: [INFO] %s\n" "${MY_NAME}" "${message}"
+		fi
+		if [ "${type}" = "ok" ]; then
+			printf "%s: ${clr_green}[OK]   %s${clr_rst}\n" "${MY_NAME}" "${message}"
+		fi
+	fi
+}
+
 function print_help() {
-	printf "Usage: %s %s\\n" "${MY_NAME}" "-p <path> -a <cmd> -d <cmd> [-t <cmd> -w <str> -i <int> -v]"
+	printf "Usage: %s %s\\n" "${MY_NAME}" "-p <path> -a <cmd> -d <cmd> [-t <cmd> -w <str> -i <int> -v -c]"
 	printf "       %s %s\\n" "${MY_NAME}" "--help"
 	printf "       %s %s\\n" "${MY_NAME}" "--version"
 	printf "\\n"
@@ -84,6 +118,7 @@ function print_help() {
 	printf "  -i <int>      %s\\n" "When using the bash watcher, specify the interval in seconds for how often"
 	printf "                %s\\n" "to look for directory changes."
 	printf "  -v            %s\\n" "Verbose output."
+	printf "  -c            %s\\n" "Colorized log output."
 	printf "\\nMisc arguments:\\n"
 	printf "  --help        %s\\n" "Show this help screen."
 	printf "  --version     %s\\n" "Show version information."
@@ -131,13 +166,11 @@ function action() {
 	action="${action//%n/${name}}"
 
 	if eval "${action}"; then
-		if [ "${verbose}" -gt "0" ]; then
-			printf "%s: [%s] [OK]  %s succeeded: %s\\n" "${MY_NAME}" "$( date '+%Y-%m-%d %H:%M:%S' )" "${info}" "${directory}"
-		fi
+		log "ok" "${info} succeeded: ${directory}"
 		return 0
 	else
-		printf "%s: [%s] [ERR] %s failed:    %s\\n" "${MY_NAME}" "$( date '+%Y-%m-%d %H:%M:%S' )" "${info}" "${directory}" >&2
-		printf "%s: [%s] [ERR] %s failed:    %s\\n" "${MY_NAME}" "$( date '+%Y-%m-%d %H:%M:%S' )" "${info}" "${action}" >&2
+		log "err" "${info} failed:    ${action}"
+		log "err" "${info} failed:    ${directory}"
 		return 1
 	fi
 }
@@ -152,11 +185,11 @@ function trigger() {
 		if [ "${changes}" -eq "1" ]; then
 			if eval "${action}"; then
 				if [ "${verbose}" -gt "0" ]; then
-					printf "%s: [%s] [OK]  %s succeeded: %s\\n" "${MY_NAME}" "$( date '+%Y-%m-%d %H:%M:%S' )" "TRG" "${action}"
+					log "ok" "TRG succeeded: ${action}"
 				fi
 				return 0
 			else
-				printf "%s: [%s] [ERR] %s failed:    %s\\n" "${MY_NAME}" "$( date '+%Y-%m-%d %H:%M:%S' )" "TRG" "${action}" >&2
+				log "err" "TRG failed:    ${action}"
 				# Also return 0 here in order to not abort the loop
 				return 0
 			fi
@@ -253,6 +286,9 @@ while [ $# -gt 0  ]; do
 		-v)
 			VERBOSE="1"
 			;;
+		-c)
+			COLORIZED="1"
+			;;
 		--help)
 			print_help
 			exit 0
@@ -290,10 +326,7 @@ fi
 ############################################################
 
 # Log startup
-if [ "${VERBOSE}" -gt "0" ]; then
-	printf "%s: [%s] Starting daemon.\\n" "${MY_NAME}" "$( date '+%Y-%m-%d %H:%M:%S' )"
-fi
-
+log "info" "Starting daemon: $( date '+%Y-%m-%d %H:%M:%S' )"
 
 CHANGES=0
 ALL_DIRS="$( get_subdirs "${WATCH_DIR}" )"
@@ -320,9 +353,7 @@ CHANGES=0
 
 # Use native inotify
 if [ "${WATCHER}" = "inotify" ]; then
-	if [ "${VERBOSE}" -gt "0" ]; then
-		printf "%s: [%s] Using native inotify to watch for changes.\\n" "${MY_NAME}" "$( date '+%Y-%m-%d %H:%M:%S' )"
-	fi
+	log "info" "Using native inotify to watch for changes."
 	inotifywait \
 		--quiet \
 		--monitor \
@@ -345,9 +376,7 @@ if [ "${WATCHER}" = "inotify" ]; then
 	done
 # Use custom inotify
 else
-	if [ "${VERBOSE}" -gt "0" ]; then
-		printf "%s: [%s] Using bash loop to watch for changes.\\n" "${MY_NAME}" "$( date '+%Y-%m-%d %H:%M:%S' )"
-	fi
+	log "info" "Using bash loop to watch for changes."
 	while true; do
 		# Get all directories
 		NEW_DIRS="$( get_subdirs "${WATCH_DIR}" )"

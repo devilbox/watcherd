@@ -48,7 +48,7 @@ watcherd -v \
 ### Usage
 
 ```shell
-Usage: watcherd -p <path> -a <cmd> -d <cmd> [-t <cmd> -w <str> -i <int> -v]
+Usage: watcherd -p <path> -a <cmd> -d <cmd> [-t <cmd> -w <str> -i <int> -v -c]
        watcherd --help
        watcherd --version
 
@@ -83,6 +83,7 @@ Optional arguments:
   -i <int>      When using the bash watcher, specify the interval in seconds
                 for how often to look for directory changes.
   -v            Verbose output.
+  -c            Colorized log output.
 
 Misc arguments:
   --help        Show this help screen.
