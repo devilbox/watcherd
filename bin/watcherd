@@ -29,7 +29,7 @@ MY_DATE="2022-12-17"
 MY_URL="https://github.com/devilbox/watcherd"
 MY_AUTHOR="cytopia <cytopia@everythingcli.org>"
 MY_GPGKEY="0xA02C56F0"
-MY_VERSION="1.0.5"
+MY_VERSION="1.0.6"
 MY_LICENSE="MIT"
 
 # Default settings
@@ -174,45 +174,65 @@ while [ $# -gt 0  ]; do
 	case "${1}" in
 		-p)
 			shift
+			if [ -z "${1:-}" ]; then
+				>&2 echo "${MY_NAME}: -p requires an argument."
+				exit 1
+			fi
 			if [ ! -d "${1}" ]; then
-				>&2 echo "Specified directory with -p does not exist: '${1}'."
+				>&2 echo "${MY_NAME}: Specified directory with -p does not exist: '${1}'."
 				exit 1
 			fi
 			WATCH_DIR="${1}"
 			;;
 		-a)
 			shift
+			if [ -z "${1:-}" ]; then
+				>&2 echo "${MY_NAME}: -a requires an argument."
+				exit 1
+			fi
 			if [ "${1:0:1}" = "-" ]; then
-				>&2 echo "Specified add command cannot start with '-': '${1}'."
+				>&2 echo "${MY_NAME}: Specified add command cannot start with '-': '${1}'."
 				exit 1
 			fi
 			CMD_ADD="${1}"
 			;;
 		-d)
 			shift
+			if [ -z "${1:-}" ]; then
+				>&2 echo "${MY_NAME}: -d requires an argument."
+				exit 1
+			fi
 			if [ "${1:0:1}" = "-" ]; then
-				>&2 echo "Specified del command cannot start with '-': '${1}'."
+				>&2 echo "${MY_NAME}: Specified del command cannot start with '-': '${1}'."
 				exit 1
 			fi
 			CMD_DEL="${1}"
 			;;
 		-t)
 			shift
+			if [ -z "${1:-}" ]; then
+				>&2 echo "${MY_NAME}: -t requires an argument."
+				exit 1
+			fi
 			if [ "${1:0:1}" = "-" ]; then
-				>&2 echo "Specified trigger command cannot start with '-': '${1}'."
+				>&2 echo "${MY_NAME}: Specified trigger command cannot start with '-': '${1}'."
 				exit 1
 			fi
 			CMD_TRIGGER="${1}"
 			;;
 		-w)
 			shift
+			if [ -z "${1:-}" ]; then
+				>&2 echo "${MY_NAME}: -w requires an argument."
+				exit 1
+			fi
 			if [ "${1}" != "bash" ] && [ "${1}" != "inotify" ]; then
-				>&2 echo "Specified watcher with -w must either be 'bash; or 'inotify': '${1}'."
+				>&2 echo "${MY_NAME}: Specified watcher with -w must either be 'bash; or 'inotify': '${1}'."
 				exit
 			fi
 			if [ "${1}" = "inotify" ]; then
 				if ! command -v inotifywait >/dev/null 2>&1; then
-					>&2 echo "Specified watcher 'inotify' requires 'inotifywait' binary. Not found."
+					>&2 echo "${MY_NAME}: Specified watcher 'inotify' requires 'inotifywait' binary. Not found."
 					exit
 				fi
 			fi
@@ -220,8 +240,12 @@ while [ $# -gt 0  ]; do
 			;;
 		-i)
 			shift
+			if [ -z "${1:-}" ]; then
+				>&2 echo "${MY_NAME}: -i requires an argument."
+				exit 1
+			fi
 			if ! echo "${1}" | grep -Eq '^[1-9][0-9]*$'; then
-				>&2 echo "Specified interval with -i is not a valid integer > 0: '${1}'."
+				>&2 echo "${MY_NAME}: Specified interval with -i is not a valid integer > 0: '${1}'."
 				exit 1
 			fi
 			INTERVAL="${1}"
@@ -238,8 +262,7 @@ while [ $# -gt 0  ]; do
 			exit 0
 			;;
 		*)
-			echo "Invalid argument: ${1}"
-			echo "Type '${MY_NAME} --help' for available options."
+			echo "${MY_NAME}: Invalid argument: ${1}. Type --help for available options."
 			exit 1
 			;;
 	esac
@@ -248,15 +271,15 @@ done
 
 # Make sure required arguments are set
 if [ -z "${WATCH_DIR}" ]; then
-	>&2 echo "Error: -p is required. Type --help for more information."
+	>&2 echo "${MY_NAME}: Error: -p is required. Type --help for more information."
 	exit 1
 fi
 if [ -z "${CMD_ADD}" ]; then
-	>&2 echo "Error: -a is required. Type --help for more information."
+	>&2 echo "${MY_NAME}: Error: -a is required. Type --help for more information."
 	exit 1
 fi
 if [ -z "${CMD_DEL}" ]; then
-	>&2 echo "Error: -d is required. Type --help for more information."
+	>&2 echo "${MY_NAME}: Error: -d is required. Type --help for more information."
 	exit 1
 fi
 
