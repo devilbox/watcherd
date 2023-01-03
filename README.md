@@ -47,7 +47,7 @@ watcherd -v \
 
 ### Usage
 
-```shell
+```bash
 Usage: watcherd -p <path> -a <cmd> -d <cmd> [-t <cmd> -w <str> -i <int> -v -c]
        watcherd --help
        watcherd --version
@@ -73,6 +73,8 @@ Required arguments:
                 Example: -d "script.sh -f %p -c %n -a %p"
 
 Optional arguments:
+  -e <regex>    Exclude regex for directories to ignore.
+                E.g.: -e '\.*' to ignore dot directories.
   -t <cmd>      Command to execute after all directories have been added or
                 deleted during one round.
                 No argument will be appended.
