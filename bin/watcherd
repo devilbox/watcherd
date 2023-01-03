@@ -25,11 +25,11 @@ IFS=$'\n'
 
 # Versioning
 MY_NAME="watcherd"
-MY_DATE="2022-12-18"
+MY_DATE="2023-03-01"
 MY_URL="https://github.com/devilbox/watcherd"
 MY_AUTHOR="cytopia <cytopia@everythingcli.org>"
 MY_GPGKEY="0xA02C56F0"
-MY_VERSION="1.0.7"
+MY_VERSION="1.1.0"
 MY_LICENSE="MIT"
 
 # Default settings
@@ -38,6 +38,7 @@ INTERVAL=1
 VERBOSE=0
 WATCHER="bash"
 WATCH_DIR=
+EXCLUDE=
 CMD_ADD=
 CMD_DEL=
 CMD_TRIGGER=
@@ -107,8 +108,10 @@ function print_help() {
 	printf "                %s\\n" "You can also append the following placeholders to your command string:"
 	printf "                %s\\n" "%p The full path of the directory that changed (added, deleted)."
 	printf "                %s\\n" "%n The name of the directory that changed (added, deleted)."
-	printf "                %s\\n" "Example: -b \"script.sh -f %p -c %n -a %p\""
+	printf "                %s\\n" "Example: -d \"script.sh -f %p -c %n -a %p\""
 	printf "\\nOptional arguments:\\n"
+	printf "  -e <regex>    %s\\n" "Exclude regex for directories to ignore."
+	printf "                %s\\n" "E.g.: -e '\\.*' to ignore dot directories."
 	printf "  -t <cmd>      %s\\n" "Command to execute after all directories have been added or deleted during one round."
 	printf "                %s\\n" "No argument will be appended."
 	printf "  -w <str>      %s\\n" "The directory watcher to use. Valid values are:"
@@ -141,7 +144,8 @@ function get_subdirs() {
 	#	| grep -Ev "^${path}/.+/" \
 	#	| sort
 	path="${path%/}/"
-	(ls -1 -a "${path}" || true) \
+	# shellcheck disable=SC2012
+	cd "${path}" && ls -1 -a . \
 		| tr '\r\n' '\000' \
 		| tr '\n' '\000' \
 		| tr '\r' '\000' \
@@ -149,7 +153,16 @@ function get_subdirs() {
 			-0 \
 			-P"$(getconf _NPROCESSORS_ONLN)" \
 			-n1 \
-			sh -c "if [ -d \"${path}\${1}\" ] && [ \"\${1}\" != \".\" ] && [ \"\${1}\" != \"..\" ]; then echo \"${path}\${1}\"; fi" -- \
+			sh -c "
+				if [ -d \"\${1}\" ] && [ \"\${1}\" != \".\" ] && [ \"\${1}\" != \"..\" ]; then
+					if [ -n \"${EXCLUDE}\" ]; then
+						if ! echo \"\${1}\" | grep -E '${EXCLUDE}' >/dev/null; then
+							echo \"${path}\${1}\";
+						fi
+					else
+						echo \"${path}\${1}\";
+					fi;
+				fi" -- \
 		| sort
 }
 
@@ -240,6 +253,14 @@ while [ $# -gt 0  ]; do
 				exit 1
 			fi
 			CMD_DEL="${1}"
+			;;
+		-e)
+			shift
+			if [ -z "${1:-}" ]; then
+				>&2 echo "${MY_NAME}: -e requires an argument."
+				exit 1
+			fi
+			EXCLUDE="${1}"
 			;;
 		-t)
 			shift
@@ -354,26 +375,48 @@ CHANGES=0
 # Use native inotify
 if [ "${WATCHER}" = "inotify" ]; then
 	log "info" "Using native inotify to watch for changes."
-	inotifywait \
-		--quiet \
-		--monitor \
-		--event create \
-		--event modify \
-		--event delete \
-		--event move \
-		--format '%e/\\%w%f' \
-	"${WATCH_DIR}" | while read -r output; do
-		d="${output##*\\}"
-		if [[ "${output}" =~ ^(CREATE|MOVED_TO),ISDIR/\\ ]]; then
-			if action "${d}" "${CMD_ADD}" "ADD" "${VERBOSE}"; then
-				trigger "${CMD_TRIGGER}" "1" "${VERBOSE}"
+	if [ -n "${EXCLUDE}" ]; then
+		inotifywait \
+			--monitor \
+			--exclude "${EXCLUDE}" \
+			--event create \
+			--event modify \
+			--event delete \
+			--event move \
+			--format '%e/\\%w%f' \
+		"${WATCH_DIR}" | while read -r output; do
+			d="${output##*\\}"
+			if [[ "${output}" =~ ^(CREATE|MOVED_TO),ISDIR/\\ ]]; then
+				if action "${d}" "${CMD_ADD}" "ADD" "${VERBOSE}"; then
+					trigger "${CMD_TRIGGER}" "1" "${VERBOSE}"
+				fi
+			elif [[ "${output}" =~ ^(DELETE|MOVED_FROM),ISDIR/\\ ]]; then
+				if action "${d}" "${CMD_DEL}" "DEL" "${VERBOSE}"; then
+					trigger "${CMD_TRIGGER}" "1" "${VERBOSE}"
+				fi
 			fi
-		elif [[ "${output}" =~ ^(DELETE|MOVED_FROM),ISDIR/\\ ]]; then
-			if action "${d}" "${CMD_DEL}" "DEL" "${VERBOSE}"; then
-				trigger "${CMD_TRIGGER}" "1" "${VERBOSE}"
+		done
+	else
+		inotifywait \
+			--monitor \
+			--event create \
+			--event modify \
+			--event delete \
+			--event move \
+			--format '%e/\\%w%f' \
+		"${WATCH_DIR}" | while read -r output; do
+			d="${output##*\\}"
+			if [[ "${output}" =~ ^(CREATE|MOVED_TO),ISDIR/\\ ]]; then
+				if action "${d}" "${CMD_ADD}" "ADD" "${VERBOSE}"; then
+					trigger "${CMD_TRIGGER}" "1" "${VERBOSE}"
+				fi
+			elif [[ "${output}" =~ ^(DELETE|MOVED_FROM),ISDIR/\\ ]]; then
+				if action "${d}" "${CMD_DEL}" "DEL" "${VERBOSE}"; then
+					trigger "${CMD_TRIGGER}" "1" "${VERBOSE}"
+				fi
 			fi
-		fi
-	done
+		done
+	fi
 # Use custom inotify
 else
 	log "info" "Using bash loop to watch for changes."
